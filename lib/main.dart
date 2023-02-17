@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Varebu',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -32,28 +32,91 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class ButtonsRow extends StatefulWidget {
+  const ButtonsRow({super.key});
+
+  @override
+  State<ButtonsRow> createState() => _ButtonsRowState();
+}
+
+class _ButtonsRowState extends State<ButtonsRow> {
+  bool _playersSelected = true;
+  bool _teamsSelected = false;
+
+  void _handlePlayersButtonTap(bool newValue) {
+    setState(() {
+      _playersSelected = true;
+      _teamsSelected = false;
+    });
+  }
+
+  void _handleTeamsButtonTap(bool newValue) {
+    setState(() {
+      _playersSelected = false;
+      _teamsSelected = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: [
+          Expanded(
+            child: TopButton(
+                text: 'Jugadores',
+                active: _playersSelected,
+                onPressed: _handlePlayersButtonTap
+            ),
+          ),
+          Expanded(
+            child: TopButton(
+                text: 'Equipos',
+                active: _teamsSelected,
+                onPressed: _handleTeamsButtonTap
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class TopButton extends StatefulWidget {
   final String text;
+  final ValueChanged<bool> onPressed;
+  bool active = false;
 
-  const TopButton({super.key, required this.text});
+  TopButton(
+      {super.key,
+      required this.active,
+      required this.text,
+      required this.onPressed});
 
   @override
   State<TopButton> createState() => _TopButtonState();
 }
 
 class _TopButtonState extends State<TopButton> {
-  bool _selected = false;
+  void _handleTap() {
+    widget.onPressed(!widget.active);
+  }
+
+  Color textColor() { return widget.active ? Colors.white : Colors.indigo;}
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    var backgroundColor = MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) { return widget.active ? Colors.indigo : Colors.grey; });
+
+    return SizedBox(
       // width: MediaQuery.of(context).size.width,
       height: 50,
       child: OutlinedButton(
-        child: Text(widget.text),
-        onPressed: () {
-          _selected = true;
-        },
+        onPressed: _handleTap,
+        style: ButtonStyle(
+          backgroundColor: backgroundColor,
+        ),
+        child: Text(widget.text + widget.active.toString(), style: TextStyle(color: textColor())),
       ),
     );
   }
@@ -97,25 +160,13 @@ class _HomeState extends State<Home> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    var buttonsRow = Container(
-      child: Row(
-        children: const [
-          Expanded(
-            child: TopButton(text: 'Jugadores'),
-          ),
-          Expanded(
-            child: TopButton(text: 'Equipos'),
-          ),
-        ],
-      ),
-    );
     return Scaffold(
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: ListView(
           children: <Widget>[
-            buttonsRow,
+            ButtonsRow(),
             const Text(
               'You have pushed the button this many times:',
             ),
