@@ -1,107 +1,5 @@
 # Miscellaneous
 *.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# Visual Studio Code related
-.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-.dart_tool/
-.flutter-plugins
-.packages
-.pub-cache/
-.pub/
-/build/
-
-# Android related
-**/android/**/gradle-wrapper.jar
-**/android/.gradle
-**/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
-**/android/local.properties
-**/android/**/GeneratedPluginRegistrant.java
-
-# iOS/XCode related
-**/ios/**/*.mode1v3
-**/ios/**/*.mode2v3
-**/ios/**/*.moved-aside
-**/ios/**/*.pbxuser
-**/ios/**/*.perspectivev3
-**/ios/**/*sync/
-**/ios/**/.sconsign.dblite
-**/ios/**/.tags*
-**/ios/**/.vagrant/
-**/ios/**/DerivedData/
-**/ios/**/Icon?
-**/ios/**/Pods/
-**/ios/**/.symlinks/
-**/ios/**/profile
-**/ios/**/xcuserdata
-**/ios/.generated/
-**/ios/Flutter/App.framework
-**/ios/Flutter/Flutter.framework
-**/ios/Flutter/Generated.xcconfig
-**/ios/Flutter/app.flx
-**/ios/Flutter/app.zip
-**/ios/Flutter/flutter_assets/
-**/ios/ServiceDefinitions.json
-**/ios/Runner/GeneratedPluginRegistrant.*
-
-# Exceptions to above rules.
-!**/ios/**/default.mode1v3
-!**/ios/**/default.mode2v3
-!**/ios/**/default.pbxuser
-!**/ios/**/default.perspectivev3
-!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-Share
-Improve this answer
-Follow
-answered May 5, 2019 at 12:32
-SugaR256's user avatar
-SugaR256
-8551212 silver badges99 bronze badges
-3
-Shall the *.g.dart be ignored? –
-ch271828n
- Feb 15, 2020 at 12:19
-5
-Shouldn't pubspec.lock also be ignored? –
-DroidDev
- Apr 12, 2020 at 3:59
-3
-It should be commited for applications: "For application packages, do commit pubspec.lock. This file is the recommended way for non-shared resources such as applications to manage their dependencies." dart.dev/guides/libraries/private-files –
-nstrelow
- May 5, 2020 at 18:21
-For library packages, don’t commit the pubspec.lock file. Regenerating the pubspec.lock file lets you test your package against the latest compatible versions of its dependencies. See dart.dev/guides/libraries/private-files#pubspeclock for more info. –
-Zeeshan Ansari
- Nov 18, 2021 at 6:44
-gradlew seems to need to be checked in version control, instead of gitignored. see: stackoverflow.com/questions/43954932/… –
-ch271828n
- Aug 18, 2022 at 1:46
-Add a comment
-
-9
-
-
-You can find it in official project of flutter on Github here:
-
-# Miscellaneous
-*.class
 *.lock
 *.log
 *.pyc
@@ -163,7 +61,7 @@ unlinked_spec.ds
 
 # Android related
 **/android/**/gradle-wrapper.jar
-**/android/.gradle
+.gradle/
 **/android/captures/
 **/android/gradlew
 **/android/gradlew.bat
@@ -203,7 +101,21 @@ unlinked_spec.ds
 **/ios/Runner/GeneratedPluginRegistrant.*
 
 # macOS
+**/Flutter/ephemeral/
+**/Pods/
 **/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral
+**/xcuserdata/
+
+# Windows
+**/windows/flutter/generated_plugin_registrant.cc
+**/windows/flutter/generated_plugin_registrant.h
+**/windows/flutter/generated_plugins.cmake
+
+# Linux
+**/linux/flutter/generated_plugin_registrant.cc
+**/linux/flutter/generated_plugin_registrant.h
+**/linux/flutter/generated_plugins.cmake
 
 # Coverage
 coverage/
