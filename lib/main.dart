@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:varebu/widgets/buttons_row.dart';
+
+import 'models/player.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,96 +35,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ButtonsRow extends StatefulWidget {
-  const ButtonsRow({super.key});
-
-  @override
-  State<ButtonsRow> createState() => _ButtonsRowState();
-}
-
-class _ButtonsRowState extends State<ButtonsRow> {
-  bool _playersSelected = true;
-  bool _teamsSelected = false;
-
-  void _handlePlayersButtonTap(bool newValue) {
-    setState(() {
-      _playersSelected = true;
-      _teamsSelected = false;
-    });
-  }
-
-  void _handleTeamsButtonTap(bool newValue) {
-    setState(() {
-      _playersSelected = false;
-      _teamsSelected = true;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          Expanded(
-            child: TopButton(
-                text: 'Jugadores',
-                active: _playersSelected,
-                onPressed: _handlePlayersButtonTap
-            ),
-          ),
-          Expanded(
-            child: TopButton(
-                text: 'Equipos',
-                active: _teamsSelected,
-                onPressed: _handleTeamsButtonTap
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class TopButton extends StatefulWidget {
-  final String text;
-  final ValueChanged<bool> onPressed;
-  bool active = false;
-
-  TopButton(
-      {super.key,
-      required this.active,
-      required this.text,
-      required this.onPressed});
-
-  @override
-  State<TopButton> createState() => _TopButtonState();
-}
-
-class _TopButtonState extends State<TopButton> {
-  void _handleTap() {
-    widget.onPressed(!widget.active);
-  }
-
-  Color textColor() { return widget.active ? Colors.white : Colors.indigo;}
-
-  @override
-  Widget build(BuildContext context) {
-    var backgroundColor = MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) { return widget.active ? Colors.indigo : Colors.grey; });
-
-    return SizedBox(
-      // width: MediaQuery.of(context).size.width,
-      height: 50,
-      child: OutlinedButton(
-        onPressed: _handleTap,
-        style: ButtonStyle(
-          backgroundColor: backgroundColor,
-        ),
-        child: Text(widget.text + widget.active.toString(), style: TextStyle(color: textColor())),
-      ),
-    );
-  }
-}
-
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -139,19 +52,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -167,16 +67,123 @@ class _HomeState extends State<Home> {
         child: ListView(
           children: <Widget>[
             ButtonsRow(),
-            const Text(
-              'You have pushed the button this many times:',
+            Container(
+                //constraints: BoxConstraints(maxWidth:32, maxHeight:60,minWidth:32,minHeight:32,),
+                padding: const EdgeInsets.fromLTRB(32, 8, 32, 8),
+                child: ElevatedButton(
+                    child: Text('Agregar Jugador'),
+                    onPressed: () {},
+                ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            PlayersTable(),
           ],
         ),
       ),
     );
+  }
+}
+
+class PlayersTable extends StatefulWidget {
+  const PlayersTable({super.key});
+
+  @override
+  State<PlayersTable> createState() => _PlayersTableState();
+}
+// Row is composed by:
+// 1. Player number
+// 2. Player name
+// 3. Player Stat SUM
+// 3. Player Stat A (attack)
+// 4. Player Stat B (Block)
+// 5. Player Stat D (Defense)
+// 6. Player Stat R (Reception)
+// 7. Player Stat S (Serve)
+// 8. Edit button ?
+// 9. Delete button ?
+
+class _PlayersTableState extends State<PlayersTable> {
+  @override
+  Widget build(BuildContext context) {
+    return Table(
+      //border: TableBorder.symmetric(),
+      columnWidths: const <int, TableColumnWidth>{
+        0: FixedColumnWidth(4), // number
+        1: FixedColumnWidth(64), // name
+        2: FixedColumnWidth(8), // sum
+        3: FixedColumnWidth(4), // A attack
+        4: FixedColumnWidth(4), // B attack
+        5: FixedColumnWidth(4), // D attack
+        6: FixedColumnWidth(4), // R attack
+        7: FixedColumnWidth(4), // S attack
+        8: FixedColumnWidth(4), // button
+      },
+      children: <TableRow>[
+        buildHeaderRow(),
+        buildTableRow(
+            const Player('Yulse', '300', '100', '40', '85', '85', '80'), 1),
+        buildTableRow(
+            const Player('Rakki', '300', '80', '90', '10', '15', '20'), 1),
+        buildTableRow(
+            const Player('Yulse', '300', '95', '40', '85', '85', '80'), 1),
+        buildTableRow(
+            const Player('Yulse', '300', '95', '40', '85', '85', '80'), 1),
+        buildTableRow(
+            const Player('Yulse', '300', '95', '40', '85', '85', '80'), 1),
+        buildTableRow(
+            const Player('Yulse', '300', '95', '40', '85', '85', '80'), 1),
+        buildTableRow(
+            const Player('Yulse', '300', '95', '40', '85', '85', '80'), 1),
+        buildTableRow(
+            const Player('Yulse', '300', '95', '40', '85', '85', '80'), 1),
+      ],
+    );
+  }
+
+  TableRow buildTableRow(Player player, int i) {
+    return TableRow(
+        decoration: BoxDecoration(
+            border: Border.all(strokeAlign: BorderSide.strokeAlignOutside),
+            color: Colors.grey[300]),
+        children: <Widget>[
+          buildCell(i.toString() + '.'),
+          buildCell(player.name),
+          buildCell(player.sum),
+          buildCell(player.attack, isStatus: true),
+          buildCell(player.block, isStatus: true),
+          buildCell(player.defense, isStatus: true),
+          buildCell(player.reception, isStatus: true),
+          buildCell(player.serve, isStatus: true),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.edit_note)),
+        ]);
+  }
+
+  TableCell buildCell(String text, {bool isStatus = false}) {
+    return TableCell(
+        verticalAlignment: TableCellVerticalAlignment.middle,
+        child: Container(
+          //padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+          color:
+              isStatus ? fetchColorForStat(int.parse(text)) : Colors.grey[300],
+          alignment: Alignment.center,
+          child: Text(text),
+        ));
+  }
+
+  buildHeaderRow() {
+    return TableRow(children: <Widget>[
+      const Text(''),
+      buildCell(' Jugadores '),
+      const Text(' sum ', textAlign: TextAlign.center),
+      const Text('A', textAlign: TextAlign.center),
+      const Text('B', textAlign: TextAlign.center),
+      const Text('D', textAlign: TextAlign.center),
+      const Text('R', textAlign: TextAlign.center),
+      const Text('S', textAlign: TextAlign.center),
+      const Text(''),
+    ]);
+  }
+
+  fetchColorForStat(int stat) {
+    return Colors.green[(stat / 10).toInt() * 100];
   }
 }
