@@ -6,6 +6,7 @@ import 'package:varebu/widgets/buttons_row.dart';
 import 'package:varebu/widgets/players_table.dart';
 import 'package:get_it/get_it.dart';
 
+import 'models/player.dart';
 
 final getIt = GetIt.instance;
 
@@ -41,13 +42,15 @@ class MyApp extends StatelessWidget {
         colorScheme: const ColorScheme.light(
             primary: Colors.indigo, secondary: Colors.amber),
       ),
-      home: const Home(),
+      home: Home(),
     );
   }
 }
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  Home({super.key});
+  List<Player> players = [];
+  final repo = getIt<PlayerRepository>();
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -63,8 +66,33 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  bool rebuild = false;
+
+  @override
+  void initState() {
+    widget.repo.insert(Player('Yulse', 300, '100', '40', '85', '85', '80'));
+    widget.repo.insert(Player('Yulse', 300, '100', '40', '85', '85', '80'));
+    widget.repo.insert(Player('Rakki', 300, '80', '90', '10', '15', '20'));
+    widget.repo.insert(Player('Rakki', 300, '80', '90', '10', '15', '20'));
+    widget.repo.insert(Player('Yulse', 300, '100', '40', '85', '85', '80'));
+    print('INSERTED INITIAL PLAYERS');
+
+    widget.repo.getAll().then((plyrs) {
+      List<Player> result = [];
+      for (var player in plyrs) {
+        result.add(player);
+      }
+
+      setState(() {
+        print('SETTED INITIAL STATE OF PLAYERS ${result.length}');
+        widget.players = result;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('[Home] building with players ${widget.players.length}');
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -86,8 +114,22 @@ class _HomeState extends State<Home> {
                 onPressed: () {},
               ),
             ),
-            PlayersTable(),
-            AddPlayerForm(),
+            PlayersTable(playerGetter: () { print('[MainGetter] returning ${widget.players.length}'); return widget.players; }),
+            AddPlayerForm(
+              notifySave: () {
+                List<Player> result = [];
+                widget.repo.getAll().then((plyrs) {
+                  for (var player in plyrs) {
+                    result.add(player);
+                  }
+                  setState(() {
+                    rebuild = !rebuild;
+                    widget.players = result;
+                  });
+                });
+
+              },
+            ),
           ],
         ),
       ),

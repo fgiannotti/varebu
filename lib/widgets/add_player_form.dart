@@ -6,7 +6,9 @@ import '../main.dart';
 import '../models/player.dart';
 
 class AddPlayerForm extends StatefulWidget {
-  const AddPlayerForm({super.key});
+  final VoidCallback notifySave;
+
+  const AddPlayerForm({super.key, required this.notifySave});
 
   @override
   AddPlayerFormState createState() {
@@ -31,10 +33,6 @@ class AddPlayerFormState extends State<AddPlayerForm> {
     repo = getIt<PlayerRepository>();
   }
 
-  Future<List<Player>> fetchPlayers() {
-    return InMemoryPlayerRepository().getAll();
-  }
-
   @override
   Widget build(BuildContext context) {
     var submitButton = Container(
@@ -50,7 +48,7 @@ class AddPlayerFormState extends State<AddPlayerForm> {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text('Jugador agregado correctamente'),
             ));
-
+            widget.notifySave();
           }
         },
         child: const Text('Submit'),
@@ -63,7 +61,7 @@ class AddPlayerFormState extends State<AddPlayerForm> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.fromLTRB(4, 16, 4, 16),
+            padding: const EdgeInsets.fromLTRB(4, 16, 4, 16),
             //constraints: BoxConstraints.tight(Size(128, 64)),
             child: Row(
               children: [

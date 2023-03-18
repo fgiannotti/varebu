@@ -5,7 +5,9 @@ import '../main.dart';
 import '../models/player.dart';
 
 class PlayersTable extends StatefulWidget {
-  const PlayersTable({super.key});
+  final List<Player> Function() playerGetter;
+
+  const PlayersTable({super.key, required this.playerGetter});
 
   @override
   State<PlayersTable> createState() => _PlayersTableState();
@@ -22,27 +24,21 @@ class PlayersTable extends StatefulWidget {
 // 8. Edit button ?
 // 9. Delete button ?
 
+// mandar el fetch al estado anterior
+// este componente recibe una lista de players y arma las rows
+// el main recibe el callback de que se agregó uno
+// ese callback ejecuta volver a hacer el fetch y hace un set state para rebuildear
 class _PlayersTableState extends State<PlayersTable> {
-  late PlayerRepository repo;
-  List<TableRow> rows = [];
   @override
   void initState() {
     super.initState();
-    repo = getIt<PlayerRepository>();
-    repo.insert(Player('Yulse', 300, '100', '40', '85', '85', '80'));
-    repo.insert(Player('Yulse', 300, '100', '40', '85', '85', '80'));
-    repo.insert(Player('Rakki', 300, '80', '90', '10', '15', '20'));
-    repo.insert(Player('Rakki', 300, '80', '90', '10', '15', '20'));
-    repo.insert(Player('Yulse', 300, '100', '40', '85', '85', '80'));
-
-    var playersFuture = repo.getAll();
-    loadRows(playersFuture);
     print('initState done');
   }
 
   @override
   Widget build(BuildContext context) {
-    print('building... rows: ${rows.length}');
+    List<Player> players = widget.playerGetter();
+    print('[PlayersTable] building... _players: ${players.length}');
     return Table(
       //border: TableBorder.symmetric(),
       columnWidths: const <int, TableColumnWidth>{
@@ -56,22 +52,12 @@ class _PlayersTableState extends State<PlayersTable> {
         7: FixedColumnWidth(4), // S attack
         8: FixedColumnWidth(4), // button
       },
-      children: <TableRow>[buildHeaderRow()] + rows,
+      children: <TableRow>[buildHeaderRow()] + loadRows(players),
     );
   }
 
-  loadRows(Future<List<Player>> players) {
-    List<TableRow> result = [];
-    players.then(
-            (plyrs) {
-              for (var player in plyrs) {
-                result.add(buildTableRow(player));
-              }
-              setState(() {
-                print('setting state');
-                rows = result;
-              });
-            });
+  List<TableRow> loadRows(List<Player> players) {
+    return players.map((Player player) => buildTableRow(player)).toList();
   }
 
   TableRow buildTableRow(Player player) {
@@ -99,7 +85,7 @@ class _PlayersTableState extends State<PlayersTable> {
         child: Container(
           //padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           color:
-          isStatus ? fetchColorForStat(int.parse(text)) : Colors.grey[300],
+              isStatus ? fetchColorForStat(int.parse(text)) : Colors.grey[300],
           alignment: Alignment.center,
           child: Text(text),
         ));
@@ -124,9 +110,5 @@ class _PlayersTableState extends State<PlayersTable> {
       return Colors.greenAccent;
     }
     return Colors.green[(stat / 10).toInt() * 100];
-  }
-
-  Future<List<Player>> fetchPlayers() async {
-    return await repo.getAll();
   }
 }
